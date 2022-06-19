@@ -57,7 +57,10 @@ struct cell** generate_maze(struct cell** grid, int height, int width, int start
 	//return res;
 
 	struct cell* neighbours = find_neighbours(grid, start_x, start_y, height, width);
-
+	for (int i = 0; neighbours[i].data == 0; i++)
+	{
+		//???
+	}
 	return grid;
 }
 
