@@ -37,6 +37,8 @@ int find_neighbours_count(int start_x, int start_y, int height, int width)
 
 int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 {
+	if ((start_x + start_y) == (height + width))
+		return 0;
 	int neighbours = find_neighbours_count(start_x, start_y, height, width);
 	struct list_node_t* neighbours_ = find_neighbours(start_x, start_y, height, width);
 	struct list_node_t* neighbours_indexes = NULL;
@@ -64,10 +66,11 @@ void print_grid(int* grid, int width, int height)
 		for (int z = 0; z < height; z++)
 		{
 			if (grid[i * 3 + z] == 1)
-				printf("#");
+				printf("# ");
 			else
-				printf("  ");
+				printf("   ");
 		}
+		printf("\n");
 	}
 }
 
