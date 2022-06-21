@@ -57,6 +57,20 @@ int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 	return grid;
 }
 
+void print_grid(int* grid, int width, int height)
+{
+	for (int i = 0; i < width; i++)
+	{
+		for (int z = 0; z < height; z++)
+		{
+			if (grid[i * 3 + z] == 1)
+				printf("#");
+			else
+				printf("  ");
+		}
+	}
+}
+
 //3*реда + колоната = мястото в едномерния масив
 //3*1+2 = 5
 
