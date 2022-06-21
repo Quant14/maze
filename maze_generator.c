@@ -37,9 +37,12 @@ int find_neighbours_count(int start_x, int start_y, int height, int width)
 
 int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 {
+	grid[(start_x * 3) + start_y] = 0;
 	if ((start_x + start_y) == (height + width))
-		return 0;
+		return grid;
 	int neighbours = find_neighbours_count(start_x, start_y, height, width);
+	if (neighbours == 0)
+		return grid;
 	struct list_node_t* neighbours_ = find_neighbours(start_x, start_y, height, width);
 	struct list_node_t* neighbours_indexes = NULL;
 	for (int i = 0; i < neighbours; i++)
@@ -53,11 +56,54 @@ int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 			neighbours_indexes = add_to_list(neighbours_indexes, grid[(int)cpy_neighbours->value]);
 			if (grid[(int)cpy_neighbours->value] == 0)
 				continue;
-			grid[(int)cpy_neighbours->value] = 0;
-			generate_maze(grid, height, width, (int)cpy_neighbours->value / 3, (int)cpy_neighbours->value % 3);
+			grid = generate_maze(grid, height, width, (int)cpy_neighbours->value / 3, (int)cpy_neighbours->value % 3);
 		}
 	}
 
+	return grid;
+}
+
+int* generate_maze1(int* grid, int height, int width, int start_x, int start_y)
+{
+	grid[(start_x * 3) + start_y] = 0;
+	if ((start_x + start_y) == (height + width))
+		return grid;
+	for (int i = 0; i < 4; i++)
+	{
+		int res = rand() % 4;
+		if (res == 0)
+		{
+			if (start_x - 1 >= 0)
+			{
+				grid = generate_maze1(grid, height, width, start_x - 1, start_y);
+				return grid;
+			}
+		}
+		else if (res == 1)
+		{
+			if (start_x + 1 >= 0)
+			{
+				grid = generate_maze1(grid, height, width, start_x + 1, start_y);
+				return grid;
+			}
+		}
+		else if (res == 2)
+		{
+			if (start_y - 1 >= 0)
+			{
+				grid = generate_maze1(grid, height, width, start_x, start_y - 1);
+				return grid;
+			}
+		}
+		else
+		{
+			if (start_y + 1 >= 0)
+			{
+				grid = generate_maze1(grid, height, width, start_x, start_y + 1);
+				return grid;
+			}
+		}
+	}
 	return grid;
 }
 
@@ -70,7 +116,7 @@ void print_grid(int* grid, int width, int height)
 			if (grid[i * 3 + z] == 1)
 				printf("# ");
 			else
-				printf("   ");
+				printf("  ");
 		}
 		printf("\n");
 	}
@@ -81,7 +127,7 @@ void print_grid(int* grid, int width, int height)
 
 int main()
 {
-	int width = 3, height = 3;
+	int width = 5, height = 5;
 	int* grid = malloc(sizeof(int) * width * height);
 	if (!grid) return 0;
 	for (int i = 0; i < (width * height); i++)
@@ -91,7 +137,7 @@ int main()
 
 	srand((unsigned int)time((time_t*)NULL));
 
-	int* res = generate_maze(grid, height, width, 0, 0);
+	int* res = generate_maze1(grid, height, width, 0, 0);
 
 	print_grid(grid, width, height);
 	puts("");
