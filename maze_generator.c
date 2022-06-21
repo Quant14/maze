@@ -79,7 +79,10 @@ int main()
 	int width = 3, height = 3;
 	int* grid = malloc(sizeof(int) * width * height);
 	if (!grid) return 0;
-	memset(grid, 1, sizeof(int) * width * height);
+	for (int i = 0; i < (width * height); i++)
+		grid[i] = 1;
+
+	print_grid(grid, height, width);
 
 	srand((unsigned int)time((time_t*)NULL));
 
