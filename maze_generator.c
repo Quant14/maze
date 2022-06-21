@@ -51,6 +51,8 @@ int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 			for (int i = 0; i < res; i++)
 				cpy_neighbours = cpy_neighbours->next;
 			neighbours_indexes = add_to_list(neighbours_indexes, grid[(int)cpy_neighbours->value]);
+			if (grid[(int)cpy_neighbours->value] == 0)
+				continue;
 			grid[(int)cpy_neighbours->value] = 0;
 			generate_maze(grid, height, width, (int)cpy_neighbours->value / 3, (int)cpy_neighbours->value % 3);
 		}
