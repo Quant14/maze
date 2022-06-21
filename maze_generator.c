@@ -85,5 +85,11 @@ int main()
 
 	int* res = generate_maze(grid, height, width, 0, 0);
 
+	print_grid(grid, width, height);
+	puts("");
+	puts("");
+	puts("");
+	print_grid(res, width, height);
+
 	return 0;
 }
