@@ -95,7 +95,7 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 			else
 				curr_y++;
 			grid = generate_maze1(grid, height, width, curr_x, curr_y, x, y);
-			return grid;
+			//return grid;
 		}
 	}
 	return grid;
@@ -112,7 +112,7 @@ int* generate(int height, int width)
 
 void print_grid(int* grid, int width, int height)
 {
-	for (int i = width * 8; i > 0; i--)
+	for (int i = width * 4; i > 0; i--)
 		printf("-");
 	printf("\n");
 	for (int i = 0; i < width; i++)
@@ -124,9 +124,9 @@ void print_grid(int* grid, int width, int height)
 			else
 				printf("  ");
 		}
-		printf("\n");
+		printf("|\n");
 	}
-	for (int i = width * 8; i > 0; i--)
+	for (int i = width * 4; i > 0; i--)
 		printf("-");
 }
 
@@ -135,7 +135,7 @@ void print_grid(int* grid, int width, int height)
 
 int main()
 {
-	int width = 3, height = 3;
+	int width = 7, height = 7;
 	int* grid = malloc(sizeof(int) * width * height);
 	if (!grid) return 0;
 	for (int i = 0; i < (width * height); i++)
@@ -148,13 +148,9 @@ int main()
 	int* res = generate(height, width);
 
 	puts("");
-	print_grid(res, width, height);
-
-	/*
 	puts("");
 	puts("");
 	print_grid(res, width, height);
-	*/
 
 	return 0;
 }
