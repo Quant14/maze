@@ -7,18 +7,30 @@
 
 
 
-struct list_node_t* find_neighbours(int start_x, int start_y, int height, int width)
+struct list_node_t* find_neighbours(int* grid, int start_x, int start_y, int height, int width, int neighbours)
 {
-	struct list_node_t* list = NULL;
-	if (start_x - 1 >= 0)
-		list = add_to_list(list, ((start_x - 1) * 3) + start_y);
+	int* res = malloc(sizeof(int) * neighbours);
+
+	//обикалям всичко около точката и ако има отворена клетка значи не може тази точка да е от лабиринта
+	//освен само предишната клетка, която е от пътя
+	if (start_x - 1 >= 0 && grid[(start_x - 1) * 3 + start_y] == 1)
+	{
+		if (grid[(start_x - 1) * 3 + (start_y - 1)] == 0 || grid[(start_x - 1) * 3 + (start_y + 1)] == 0)
+			;
+	}
 	if (start_x + 1 < width)
-		list = add_to_list(list, ((start_x + 1) * 3) + start_y);
+	{
+
+	}
 	if (start_y - 1 >= 0)
-		list = add_to_list(list, ((start_y - 1) * 3) + start_x);
+	{
+
+	}
 	if (start_y + 1 < height)
-		list = add_to_list(list, ((start_y + 1) * 3) + start_x);
-	return list;
+	{
+
+	}
+	return res;
 }
 
 int find_neighbours_count(int start_x, int start_y, int height, int width)
@@ -66,8 +78,12 @@ int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 int* generate_maze1(int* grid, int height, int width, int start_x, int start_y)
 {
 	grid[(start_x * 3) + start_y] = 0;
-	if ((start_x + start_y) == (height + width))
+	if ((start_x + start_y + 2) == (height + width))
 		return grid;
+	int neighbours = find_neighbours_count(start_x, start_y, height, width);
+	if (neighbours == 0)
+		return grid;
+	struct list_node_t* neighbours_ = find_neighbours(start_x, start_y, height, width);
 	for (int i = 0; i < 4; i++)
 	{
 		int res = rand() % 4;
@@ -109,6 +125,9 @@ int* generate_maze1(int* grid, int height, int width, int start_x, int start_y)
 
 void print_grid(int* grid, int width, int height)
 {
+	for (int i = width * 8; i > 0; i--)
+		printf("-");
+	printf("\n");
 	for (int i = 0; i < width; i++)
 	{
 		for (int z = 0; z < height; z++)
@@ -120,6 +139,8 @@ void print_grid(int* grid, int width, int height)
 		}
 		printf("\n");
 	}
+	for (int i = width * 8; i > 0; i--)
+		printf("-");
 }
 
 //3*реда + колоната = мястото в едномерния масив
@@ -139,11 +160,12 @@ int main()
 
 	int* res = generate_maze1(grid, height, width, 0, 0);
 
-	print_grid(grid, width, height);
 	puts("");
+	print_grid(grid, width, height);
+	/*
 	puts("");
 	puts("");
 	print_grid(res, width, height);
-
+	*/
 	return 0;
 }
