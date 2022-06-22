@@ -5,28 +5,45 @@
 #include "list.h"
 #include "set.h"
 
+int check_neighbour(int* grid, int x, int y, int prev_x, int prev_y)
+{
+	int curr_x = 0, curr_y = 0;
+	curr_x = x - 1;
+	curr_y = y - 1;
+	for (int z = 0; z < 3; z++)
+	{
+		curr_x = x - 1;
+		curr_y = y - 1 + z;
+		for (int i = 3; i > 0; i--)
+		{
+			if (grid[(curr_x * 3) + curr_y] == 0 && curr_x != prev_x && curr_y != prev_y && curr_x != x && curr_y != y)
+				return 0;
+			curr_x++;
+		}
+	}
+	return 1;
+}
 
-
-struct list_node_t* find_neighbours(int* grid, int start_x, int start_y, int height, int width, int neighbours)
+int* find_neighbours(int* grid, int x, int y, int height, int width, int neighbours)
 {
 	int* res = malloc(sizeof(int) * neighbours);
 
 	//обикалям всичко около точката и ако има отворена клетка значи не може тази точка да е от лабиринта
 	//освен само предишната клетка, която е от пътя
-	if (start_x - 1 >= 0 && grid[(start_x - 1) * 3 + start_y] == 1)
+	if (x - 1 >= 0 && grid[(x - 1) * 3 + y] == 1)
 	{
-		if (grid[(start_x - 1) * 3 + (start_y - 1)] == 0 || grid[(start_x - 1) * 3 + (start_y + 1)] == 0)
+		if (grid[(x - 1) * 3 + (y - 1)] == 0 || grid[(x - 1) * 3 + (y + 1)] == 0)
 			;
 	}
-	if (start_x + 1 < width)
+	if (x + 1 < width)
 	{
 
 	}
-	if (start_y - 1 >= 0)
+	if (y - 1 >= 0)
 	{
 
 	}
-	if (start_y + 1 < height)
+	if (y + 1 < height)
 	{
 
 	}
