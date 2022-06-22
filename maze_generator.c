@@ -51,7 +51,7 @@ int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x,
 		if (check_neighbour(grid, x, y + 1, prev_x, prev_y) == 1)
 			res[index++] = 3; // dolu - 3
 	}
-	if (index < 3)
+	if (index < 4)
 		for (; index < 4; index++)
 			res[index] = -1;
 	return res;
@@ -96,6 +96,7 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 				curr_y++;
 			grid = generate_maze1(grid, height, width, curr_x, curr_y, x, y);
 			//return grid;
+			break;
 		}
 	}
 	return grid;
@@ -135,7 +136,7 @@ void print_grid(int* grid, int width, int height)
 
 int main()
 {
-	int width = 7, height = 7;
+	int width = 4, height = 4;
 	int* grid = malloc(sizeof(int) * width * height);
 	if (!grid) return 0;
 	for (int i = 0; i < (width * height); i++)
@@ -147,8 +148,6 @@ int main()
 
 	int* res = generate(height, width);
 
-	puts("");
-	puts("");
 	puts("");
 	print_grid(res, width, height);
 
