@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "list.h"
-#include "set.h"
 
 int check_neighbour(int* grid, int x, int y, int prev_x, int prev_y)
 {
