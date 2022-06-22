@@ -24,28 +24,32 @@ int check_neighbour(int* grid, int x, int y, int prev_x, int prev_y)
 	return 1;
 }
 
-int* find_neighbours(int* grid, int x, int y, int height, int width, int neighbours)
+int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y, int neighbours)
 {
 	int* res = malloc(sizeof(int) * neighbours);
-
+	int index = -1;
 	//обикалям всичко около точката и ако има отворена клетка значи не може тази точка да е от лабиринта
 	//освен само предишната клетка, която е от пътя
+
 	if (x - 1 >= 0 && grid[(x - 1) * 3 + y] == 1)
 	{
-		if (grid[(x - 1) * 3 + (y - 1)] == 0 || grid[(x - 1) * 3 + (y + 1)] == 0)
-			;
+		if (check_neighbour(grid, x - 1, y, prev_x, prev_y) == 1)
+			res[++index] = 0; // lqvo - 0
 	}
 	if (x + 1 < width)
 	{
-
+		if (check_neighbour(grid, x + 1, y, prev_x, prev_y) == 1)
+			res[++index] = 2; // dqsno - 2
 	}
 	if (y - 1 >= 0)
 	{
-
+		if (check_neighbour(grid, x, y - 1, prev_x, prev_y) == 1)
+			res[++index] = 1; // gore - 1
 	}
 	if (y + 1 < height)
 	{
-
+		if (check_neighbour(grid, x, y + 1, prev_x, prev_y) == 1)
+			res[++index] = 3; // dolu - 3
 	}
 	return res;
 }
