@@ -110,34 +110,6 @@ int* generate(int height, int width)
 	return generate_maze1(grid, height, width, 0, 0, -2, -2);
 }
 
-/*int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
-{
-	grid[(start_x * 3) + start_y] = 0;
-	if ((start_x + start_y) == (height + width))
-		return grid;
-	int neighbours = find_neighbours_count(start_x, start_y, height, width);
-	if (neighbours == 0)
-		return grid;
-	struct list_node_t* neighbours_ = find_neighbours(start_x, start_y, height, width);
-	struct list_node_t* neighbours_indexes = NULL;
-	for (int i = 0; i < neighbours; i++)
-	{
-		int res = rand() % neighbours;
-		if (has_in_list(neighbours_indexes, res) == 0)
-		{
-			struct list_node_t* cpy_neighbours = neighbours_;
-			for (int i = 0; i < res; i++)
-				cpy_neighbours = cpy_neighbours->next;
-			neighbours_indexes = add_to_list(neighbours_indexes, grid[(int)cpy_neighbours->value]);
-			if (grid[(int)cpy_neighbours->value] == 0)
-				continue;
-			grid = generate_maze(grid, height, width, (int)cpy_neighbours->value / 3, (int)cpy_neighbours->value % 3);
-		}
-	}
-
-	return grid;
-}*/
-
 void print_grid(int* grid, int width, int height)
 {
 	for (int i = width * 8; i > 0; i--)
