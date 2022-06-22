@@ -27,7 +27,9 @@ int check_neighbour(int* grid, int x, int y, int prev_x, int prev_y)
 int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y)
 {
 	int* res = malloc(sizeof(int) * 4);
+	if (!res) return 0;
 	int index = 0;
+
 	//обикалям всичко около точката и ако има отворена клетка значи не може тази точка да е от лабиринта
 	//освен само предишната клетка, която е от пътя
 
@@ -101,6 +103,15 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 	return grid;
 }
 
+int* generate(int height, int width)
+{
+	int* grid = malloc(sizeof(int) * width * height);
+	if (!grid) return 0;
+	for (int i = 0; i < (width * height); i++)
+		grid[i] = 1;
+	return generate_maze1(grid, height, width, 0, 0, -2, -2);
+}
+
 /*int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 {
 	grid[(start_x * 3) + start_y] = 0;
@@ -154,7 +165,7 @@ void print_grid(int* grid, int width, int height)
 
 int main()
 {
-	int width = 5, height = 5;
+	int width = 3, height = 3;
 	int* grid = malloc(sizeof(int) * width * height);
 	if (!grid) return 0;
 	for (int i = 0; i < (width * height); i++)
@@ -164,14 +175,16 @@ int main()
 
 	srand((unsigned int)time((time_t*)NULL));
 
-	int* res = generate_maze1(grid, height, width, 0, 0, -1, -1);
+	int* res = generate(height, width);
 
 	puts("");
-	print_grid(grid, width, height);
+	print_grid(res, width, height);
+
 	/*
 	puts("");
 	puts("");
 	print_grid(res, width, height);
 	*/
+
 	return 0;
 }
