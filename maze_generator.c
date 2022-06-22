@@ -83,7 +83,20 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 	for (int i = 0; i < 4; i++)
 	{
 		int res = rand() % neighbours;
-		//???
+		if (neighbours_[res] != -1)
+		{
+			int curr_x = x, curr_y = y;
+			if (neighbours_[res] == 0)
+				curr_x--;
+			else if (neighbours_[res] == 2)
+				curr_x++;
+			else if (neighbours_[res] == 1)
+				curr_y--;
+			else
+				curr_y++;
+			grid = generate_maze1(grid, height, width, curr_x, curr_y, x, y);
+			return grid;
+		}
 	}
 	return grid;
 }
