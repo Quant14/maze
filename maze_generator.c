@@ -24,33 +24,36 @@ int check_neighbour(int* grid, int x, int y, int prev_x, int prev_y)
 	return 1;
 }
 
-int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y, int neighbours)
+int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y)
 {
-	int* res = malloc(sizeof(int) * neighbours);
-	int index = -1;
+	int* res = malloc(sizeof(int) * 4);
+	int index = 0;
 	//обикалям всичко около точката и ако има отворена клетка значи не може тази точка да е от лабиринта
 	//освен само предишната клетка, която е от пътя
 
 	if (x - 1 >= 0 && grid[(x - 1) * 3 + y] == 1)
 	{
 		if (check_neighbour(grid, x - 1, y, prev_x, prev_y) == 1)
-			res[++index] = 0; // lqvo - 0
+			res[index++] = 0; // lqvo - 0
 	}
 	if (x + 1 < width)
 	{
 		if (check_neighbour(grid, x + 1, y, prev_x, prev_y) == 1)
-			res[++index] = 2; // dqsno - 2
+			res[index++] = 2; // dqsno - 2
 	}
 	if (y - 1 >= 0)
 	{
 		if (check_neighbour(grid, x, y - 1, prev_x, prev_y) == 1)
-			res[++index] = 1; // gore - 1
+			res[index++] = 1; // gore - 1
 	}
 	if (y + 1 < height)
 	{
 		if (check_neighbour(grid, x, y + 1, prev_x, prev_y) == 1)
-			res[++index] = 3; // dolu - 3
+			res[index++] = 3; // dolu - 3
 	}
+	if (index < 3)
+		for (; index < 4; index++)
+			res[index] = -1;
 	return res;
 }
 
@@ -68,7 +71,24 @@ int find_neighbours_count(int start_x, int start_y, int height, int width)
 	return index;
 }
 
-int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
+int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, int prev_y)
+{
+	grid[(x * 3) + y] = 0;
+	if ((x + y + 2) == (height + width))
+		return grid;
+	int neighbours = find_neighbours_count(x, y, height, width);
+	if (neighbours == 0)
+		return grid;
+	int* neighbours_ = find_neighbours(grid, x, y, height, width, prev_x, prev_y);
+	for (int i = 0; i < 4; i++)
+	{
+		int res = rand() % neighbours;
+		//???
+	}
+	return grid;
+}
+
+/*int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 {
 	grid[(start_x * 3) + start_y] = 0;
 	if ((start_x + start_y) == (height + width))
@@ -94,55 +114,7 @@ int* generate_maze(int* grid, int height, int width, int start_x, int start_y)
 	}
 
 	return grid;
-}
-
-int* generate_maze1(int* grid, int height, int width, int start_x, int start_y)
-{
-	grid[(start_x * 3) + start_y] = 0;
-	if ((start_x + start_y + 2) == (height + width))
-		return grid;
-	int neighbours = find_neighbours_count(start_x, start_y, height, width);
-	if (neighbours == 0)
-		return grid;
-	struct list_node_t* neighbours_ = find_neighbours(start_x, start_y, height, width);
-	for (int i = 0; i < 4; i++)
-	{
-		int res = rand() % 4;
-		if (res == 0)
-		{
-			if (start_x - 1 >= 0)
-			{
-				grid = generate_maze1(grid, height, width, start_x - 1, start_y);
-				return grid;
-			}
-		}
-		else if (res == 1)
-		{
-			if (start_x + 1 >= 0)
-			{
-				grid = generate_maze1(grid, height, width, start_x + 1, start_y);
-				return grid;
-			}
-		}
-		else if (res == 2)
-		{
-			if (start_y - 1 >= 0)
-			{
-				grid = generate_maze1(grid, height, width, start_x, start_y - 1);
-				return grid;
-			}
-		}
-		else
-		{
-			if (start_y + 1 >= 0)
-			{
-				grid = generate_maze1(grid, height, width, start_x, start_y + 1);
-				return grid;
-			}
-		}
-	}
-	return grid;
-}
+}*/
 
 void print_grid(int* grid, int width, int height)
 {
@@ -179,7 +151,7 @@ int main()
 
 	srand((unsigned int)time((time_t*)NULL));
 
-	int* res = generate_maze1(grid, height, width, 0, 0);
+	int* res = generate_maze1(grid, height, width, 0, 0, -1, -1);
 
 	puts("");
 	print_grid(grid, width, height);
