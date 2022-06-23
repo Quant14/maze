@@ -1,10 +1,12 @@
 #include "main.h"
+#include "save.h"
 
 int main() {
-	char* options[6] = { "Generate maze", "Read from file", "Write to file", "Solve manually", "Solve automatically", "Quit"};
+	char* options[6] = { "Generate maze", "Read from file", "Save to file", "Solve manually", "Solve automatically", "Quit"};
 	char input = 0;
 	unsigned int selected = 0;
 	bool run = true;
+	struct maze_t* maze = malloc(sizeof *maze);
 
 	while (run) {
 		do {
@@ -31,7 +33,7 @@ int main() {
 			//read file func
 			break;
 		case 2:
-			//write to file func
+			save_to_file(maze);
 			break;
 		case 3:
 			//solve manually func
