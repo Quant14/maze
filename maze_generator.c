@@ -102,29 +102,30 @@ int find_neighbours_count(int start_x, int start_y, int height, int width)
 
 int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, int prev_y)
 {
-	grid[(x * 3) + y] = 0;
+	grid[x + (y * width)] = 0;
 	if ((x + y + 2) == (height + width))
 		return grid;
 	int neighbours = find_neighbours_count(x, y, height, width);
 	if (neighbours == 0)
 		return grid;
-	int* neighbours_ = find_neighbours(grid, x, y, height, width, prev_x, prev_y);
-	for (int i = 0; i < 4; i++)
+	int* n_directions = find_neighbours(grid, x, y, height, width, prev_x, prev_y); // neighbours directions
+	for (int i = 0; i < neighbours; i++)
 	{
 		int res = rand() % neighbours;
-		if (neighbours_[res] != -1)
+		if (n_directions[res] != -1)
 		{
 			int curr_x = x, curr_y = y;
-			if (neighbours_[res] == 0)
+			if (n_directions[res] == 0)
 				curr_x--;
-			else if (neighbours_[res] == 2)
+			else if (n_directions[res] == 2)
 				curr_x++;
-			else if (neighbours_[res] == 1)
+			else if (n_directions[res] == 1)
 				curr_y--;
-			else
+			else if (n_directions[res] == 3)
 				curr_y++;
 			grid = generate_maze1(grid, height, width, curr_x, curr_y, x, y);
 			//return grid;
+			n_directions[res] = -1;
 			break;
 		}
 	}
@@ -137,7 +138,7 @@ int* generate(int height, int width)
 	if (!grid) return 0;
 	for (int i = 0; i < (width * height); i++)
 		grid[i] = 1;
-	return generate_maze1(grid, height, width, 0, 0, -2, -2);
+	return generate_maze1(grid, height, width, 0, 0, 0, 0);
 }
 
 // Raboti
@@ -190,18 +191,18 @@ int main()
 	for (int i = 0; i < (width * height); i++)
 		grid[i] = 1;
 
-	grid[0] = 0, grid[1] = 0;
+	/*grid[0] = 0, grid[1] = 0;
 	grid[4] = 0;
-	printf("%d\n", check(grid, 4, 4, 1, 1, 1, 0));
+	printf("%d\n", check(grid, 4, 4, 1, 1, 1, 0));*/
 
 	print_grid(grid, width, height);
 
 	srand((unsigned int)time((time_t*)NULL));
 
-	//int* res = generate(height, width);
+	int* res = generate(height, width);
 
 	puts("");
-	//print_grid(res, width, height);
+	print_grid(res, width, height);
 
 	return 0;
 }
