@@ -30,9 +30,9 @@ int check(int* grid, int height, int width, int x, int y, int prev_x, int prev_y
 }
 
 // Raboti
-int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y)
+int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y, int neighbours)
 {
-	int* res = malloc(sizeof(int) * 4);
+	int* res = malloc(sizeof(int) * neighbours);
 	if (!res) return 0;
 	int index = 0;
 
@@ -89,7 +89,7 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 	int neighbours = find_neighbours_count(x, y, height, width);
 	if (neighbours == 0)
 		return grid;
-	int* n_directions = find_neighbours(grid, x, y, height, width, prev_x, prev_y); // neighbours directions
+	int* n_directions = find_neighbours(grid, x, y, height, width, prev_x, prev_y, neighbours); // neighbours directions
 	for (int i = 0; i < neighbours; i++)
 	{
 		int res = rand() % neighbours;
@@ -117,9 +117,10 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 // Raboti
 void print_grid(int* grid, int width, int height)
 {
+	printf("\t");
 	for (int i = width * 2; i > 0; i--)
 		printf("-");
-	printf("\n");
+	printf("\n\t|");
 	for (int i = 0; i < height; i++)
 	{
 		for (int z = 0; z < width; z++)
@@ -129,7 +130,7 @@ void print_grid(int* grid, int width, int height)
 			else
 				printf("  ");
 		}
-		printf("|\n");
+		printf("|\n\t|");
 	}
 	for (int i = width * 2; i > 0; i--)
 		printf("-");
