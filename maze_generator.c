@@ -147,7 +147,7 @@ int* generate(int height, int width)
 	return generate_maze1(grid, height, width, 0, 0, 0, 0);
 }
 
-//[реда + колоната*ширината = мястото в едномерния масив
+//реда + колоната*ширината = мястото в едномерния масив
 //3*1+2 = 5
 
 // Raboti
