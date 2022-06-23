@@ -3,53 +3,33 @@
 #include <string.h>
 #include <time.h>
 
-int check_neighbour(int* grid, int x, int y, int prev_x, int prev_y)
-{
-	int curr_x = 0, curr_y = 0;
-	curr_x = x - 1;
-	curr_y = y - 1;
-	for (int z = 0; z < 3; z++)
-	{
-		curr_x = x - 1;
-		curr_y = y - 1 + z;
-		for (int i = 3; i > 0; i--)
-		{
-			if (grid[(curr_x * 3) + curr_y] == 0 && curr_x != prev_x && curr_y != prev_y && curr_x != x && curr_y != y)
-				return 0;
-			curr_x++;
-		}
-	}
-	return 1;
-}
-
-enum Bool { false, true };
-
 // Raboti
-enum Bool check(int* grid, int height, int width, int x, int y, int prev_x, int prev_y)
+int check(int* grid, int height, int width, int x, int y, int prev_x, int prev_y)
 {
 	if (y - 1 >= 0)
 	{
 		if ((grid[x + ((y - 1) * width)] == 0) && (x != prev_x) && ((y - 1) != prev_y))
-			return false;
+			return 0;
 	}
 	if (y + 1 < height)
 	{
 		if ((grid[x + ((y + 1) * width)] == 0) && (x != prev_x) && ((y + 1) != prev_y))
-			return false;
+			return 0;
 	}
 	if (x + 1 >= 0)
 	{
 		if ((grid[x + 1 + (y * width)] == 0) && ((x + 1) != prev_x) && (y != prev_y))
-			return false;
+			return 0;
 	}
 	if (x - 1 >= 0)
 	{
 		if ((grid[x - 1 + (y * width)] == 0) && (((x - 1) != prev_x) && (y != prev_y)))
-			return false;
+			return 0;
 	}
-	return true;
+	return 1;
 }
 
+// Raboti
 int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y)
 {
 	int* res = malloc(sizeof(int) * 4);
@@ -100,6 +80,7 @@ int find_neighbours_count(int start_x, int start_y, int height, int width)
 	return index;
 }
 
+// Raboti
 int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, int prev_y)
 {
 	grid[x + (y * width)] = 0;
@@ -126,25 +107,17 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 			grid = generate_maze1(grid, height, width, curr_x, curr_y, x, y);
 			//return grid;
 			n_directions[res] = -1;
-			break;
+			if (grid[(width * height) - 1] == 0)
+				return grid;
 		}
 	}
 	return grid;
 }
 
-int* generate(int height, int width)
-{
-	int* grid = malloc(sizeof(int) * width * height);
-	if (!grid) return 0;
-	for (int i = 0; i < (width * height); i++)
-		grid[i] = 1;
-	return generate_maze1(grid, height, width, 0, 0, 0, 0);
-}
-
 // Raboti
 void print_grid(int* grid, int width, int height)
 {
-	for (int i = width * 4; i > 0; i--)
+	for (int i = width * 2; i > 0; i--)
 		printf("-");
 	printf("\n");
 	for (int i = 0; i < height; i++)
@@ -162,41 +135,25 @@ void print_grid(int* grid, int width, int height)
 		printf("-");
 }
 
-/*
-	int index = 0;
-	int sbor = width * height;
-	for (int i = 0; i < sbor; i++)
-	{
-		if (grid[i] == 1)
-			printf("# ");
-		else
-			printf("  ");
-		index++;
-		if (index == width)
-		{
-			printf("\n");
-			index = 0;
-		}
-	}*/
-
-//3*реда + колоната = мястото в едномерния масив
-//3*1+2 = 5
-
-int main()
+// Raboti
+int* generate(int height, int width)
 {
-	int width = 4, height = 4;
-	//int grid1[4][4];
 	int* grid = malloc(sizeof(int) * width * height);
 	if (!grid) return 0;
 	for (int i = 0; i < (width * height); i++)
 		grid[i] = 1;
-
-	/*grid[0] = 0, grid[1] = 0;
-	grid[4] = 0;
-	printf("%d\n", check(grid, 4, 4, 1, 1, 1, 0));*/
-
 	print_grid(grid, width, height);
+	return generate_maze1(grid, height, width, 0, 0, 0, 0);
+}
 
+//[реда + колоната*ширината = мястото в едномерния масив
+//3*1+2 = 5
+
+// Raboti
+int main()
+{
+	int width = 10, height = 10;
+	
 	srand((unsigned int)time((time_t*)NULL));
 
 	int* res = generate(height, width);
