@@ -118,8 +118,9 @@ int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 			grid.field = generate_maze1(grid, curr_x, curr_y, x, y);
 			//return grid;
 			n_directions[res] = -1;
-			if (grid.field[(grid.width * grid.height) - 1] == 0)
-				return grid.field;
+			n_directions = find_neighbours(grid, x, y, prev_x, prev_y, neighbours);
+			//if (grid.field[(grid.width * grid.height) - 1] == 0)
+				//return grid.field;
 		}
 	}
 	return grid.field;
@@ -172,7 +173,7 @@ struct maze_t generate(int height, int width)
 // Raboti
 int main()
 {
-	int width = 4, height = 4;
+	int width = 10, height = 10;
 	
 	srand((unsigned int)time((time_t*)NULL));
 
