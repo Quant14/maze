@@ -3,34 +3,45 @@
 #include <string.h>
 #include <time.h>
 
-// Raboti
-int check(int* grid, int height, int width, int x, int y, int prev_x, int prev_y)
+struct maze_t
 {
+	int* field;
+	int width;
+	int height;
+};
+
+// Raboti
+int check(struct maze_t grid, int x, int y, int prev_x, int prev_y)
+{
+	if (grid.field[x + (y * grid.width)] == 0)
+		return 0;
+	if (prev_x == x && prev_y == y)
+		return 0;
 	if (y - 1 >= 0)
 	{
-		if ((grid[x + ((y - 1) * width)] == 0) && (x != prev_x) && ((y - 1) != prev_y))
+		if ((grid.field[x + ((y - 1) * grid.width)] == 0) && (x != prev_x) && ((y - 1) != prev_y))
 			return 0;
 	}
-	if (y + 1 < height)
+	if (y + 1 < grid.height)
 	{
-		if ((grid[x + ((y + 1) * width)] == 0) && (x != prev_x) && ((y + 1) != prev_y))
+		if ((grid.field[x + ((y + 1) * grid.width)] == 0) && (x != prev_x) && ((y + 1) != prev_y))
 			return 0;
 	}
-	if (x + 1 >= 0)
+	if (x + 1 < grid.width)
 	{
-		if ((grid[x + 1 + (y * width)] == 0) && ((x + 1) != prev_x) && (y != prev_y))
+		if ((grid.field[x + 1 + (y * grid.width)] == 0) && ((x + 1) != prev_x) && (y != prev_y))
 			return 0;
 	}
 	if (x - 1 >= 0)
 	{
-		if ((grid[x - 1 + (y * width)] == 0) && (((x - 1) != prev_x) && (y != prev_y)))
+		if ((grid.field[x - 1 + (y * grid.width)] == 0) && (((x - 1) != prev_x) && (y != prev_y)))
 			return 0;
 	}
 	return 1;
 }
 
 // Raboti
-int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x, int prev_y, int neighbours)
+int* find_neighbours(struct maze_t grid, int x, int y, int prev_x, int prev_y, int neighbours)
 {
 	int* res = malloc(sizeof(int) * neighbours);
 	if (!res) return 0;
@@ -41,22 +52,22 @@ int* find_neighbours(int* grid, int x, int y, int height, int width, int prev_x,
 
 	if (x - 1 >= 0)
 	{
-		if (check(grid, height, width, x - 1, y, prev_x, prev_y) == 1)
+		if (check(grid, x - 1, y, prev_x, prev_y) == 1)
 			res[index++] = 0; // lqvo - 0
 	}
-	if (x + 1 < width)
+	if (x + 1 < grid.width)
 	{
-		if (check(grid, height, width, x + 1, y, prev_x, prev_y) == 1)
+		if (check(grid, x + 1, y, prev_x, prev_y) == 1)
 			res[index++] = 2; // dqsno - 2
 	}
 	if (y - 1 >= 0)
 	{
-		if (check(grid, height, width, x, y - 1, prev_x, prev_y) == 1)
+		if (check(grid, x, y - 1, prev_x, prev_y) == 1)
 			res[index++] = 1; // gore - 1
 	}
-	if (y + 1 < height)
+	if (y + 1 < grid.height)
 	{
-		if (check(grid, height, width, x, y + 1, prev_x, prev_y) == 1)
+		if (check(grid, x, y + 1, prev_x, prev_y) == 1)
 			res[index++] = 3; // dolu - 3
 	}
 	if (index < 4)
@@ -81,15 +92,15 @@ int find_neighbours_count(int start_x, int start_y, int height, int width)
 }
 
 // Raboti
-int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, int prev_y)
+int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 {
-	grid[x + (y * width)] = 0;
-	if ((x + y + 2) == (height + width))
-		return grid;
-	int neighbours = find_neighbours_count(x, y, height, width);
+	grid.field[x + (y * grid.width)] = 0;
+	if ((x + y + 2) == (grid.height + grid.width))
+		return grid.field;
+	int neighbours = find_neighbours_count(x, y, grid.height, grid.width);
 	if (neighbours == 0)
-		return grid;
-	int* n_directions = find_neighbours(grid, x, y, height, width, prev_x, prev_y, neighbours); // neighbours directions
+		return grid.field;
+	int* n_directions = find_neighbours(grid, x, y, prev_x, prev_y, neighbours); // neighbours directions
 	for (int i = 0; i < neighbours; i++)
 	{
 		int res = rand() % neighbours;
@@ -104,47 +115,55 @@ int* generate_maze1(int* grid, int height, int width, int x, int y, int prev_x, 
 				curr_y--;
 			else if (n_directions[res] == 3)
 				curr_y++;
-			grid = generate_maze1(grid, height, width, curr_x, curr_y, x, y);
+			grid.field = generate_maze1(grid, curr_x, curr_y, x, y);
 			//return grid;
 			n_directions[res] = -1;
-			if (grid[(width * height) - 1] == 0)
-				return grid;
+			if (grid.field[(grid.width * grid.height) - 1] == 0)
+				return grid.field;
 		}
 	}
-	return grid;
+	return grid.field;
 }
 
-// Raboti
-void print_grid(int* grid, int width, int height)
+// Raboti pravilno veche
+void print_grid(struct maze_t grid)
 {
-	printf("\t");
-	for (int i = width * 2; i > 0; i--)
+	printf("\t|");
+	for (int i = grid.width * 2; i > 0; i--)
 		printf("-");
-	printf("\n\t|");
-	for (int i = 0; i < height; i++)
+	printf("|\n\t|");
+	int index = 0;
+	int sbor = grid.width * grid.height;
+	for (int i = 0; i < sbor; i++)
 	{
-		for (int z = 0; z < width; z++)
+		if (grid.field[i] == 1)
+			printf("# ");
+		else
+			printf("  ");
+		index++;
+		if (index == grid.width)
 		{
-			if (grid[i + (z * width)] == 1)
-				printf("# ");
-			else
-				printf("  ");
+			printf("|\n\t|");
+			index = 0;
 		}
-		printf("|\n\t|");
 	}
-	for (int i = width * 2; i > 0; i--)
+	for (int i = grid.width * 2; i > 0; i--)
 		printf("-");
+	printf("|");
 }
 
 // Raboti
-int* generate(int height, int width)
+struct maze_t generate(int height, int width)
 {
-	int* grid = malloc(sizeof(int) * width * height);
-	if (!grid) return 0;
+	struct maze_t grid;
+	grid.field = malloc(sizeof(int) * width * height);
+	grid.height = height, grid.width = width;
 	for (int i = 0; i < (width * height); i++)
-		grid[i] = 1;
-	print_grid(grid, width, height);
-	return generate_maze1(grid, height, width, 0, 0, 0, 0);
+		grid.field[i] = 1;
+	print_grid(grid);
+	int* res = generate_maze1(grid, 0, 0, 0, 0);
+	grid.field = res;
+	return grid;
 }
 
 //реда + колоната*ширината = мястото в едномерния масив
@@ -153,14 +172,16 @@ int* generate(int height, int width)
 // Raboti
 int main()
 {
-	int width = 10, height = 10;
+	int width = 4, height = 4;
 	
 	srand((unsigned int)time((time_t*)NULL));
 
-	int* res = generate(height, width);
+	struct maze_t res = generate(height, width);
 
 	puts("");
-	print_grid(res, width, height);
+	puts("");
+	puts("");
+	print_grid(res);
 
 	return 0;
 }
