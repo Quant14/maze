@@ -6,4 +6,10 @@
 #include<stdlib.h>
 #include<stdbool.h>
 
+struct maze_t {
+	int* field;
+	int width;
+	int height;
+};
+
 #endif
