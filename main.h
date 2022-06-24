@@ -5,9 +5,13 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
+
 #define SDL_MAIN_HANDLED
 #include<SDL.h>
+#include<SDL_image.h>
+
 //#include<SDL_ttf.h>
+
 #define WIND_W 1280
 #define WIND_H 720
 
