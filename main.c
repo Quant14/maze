@@ -1,5 +1,7 @@
 #include "main.h"
 #include "save.h"
+#include "read.h"
+#include "graphics.h"
 
 void update(unsigned int selected, SDL_Renderer* rend) {
 	print_menu(selected);
@@ -102,9 +104,11 @@ int main(int argc, char* argv[]) {
 								//generate maze func
 								break;
 							case 1:
-								//read file func
+								maze = read_file();
+								draw_field(maze, rend);
 								break;
 							case 2:
+								draw_field(maze, rend);
 								save_to_file(maze);
 								break;
 							case 3:
