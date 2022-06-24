@@ -10,6 +10,23 @@ struct maze_t
 	int height;
 };
 
+int check1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
+{
+	int curr_x = x, curr_y = y - 1;
+	for (int i = 0; i < 3; i++, curr_y++)
+	{
+		if ((grid.field[curr_x + (curr_y * grid.width)] == 0) && (curr_x != prev_x) && (curr_y != prev_y))
+			return 0;
+	}
+	curr_y = y, curr_x = x - 1;
+	for (int i = 0; i < 3; i++, curr_x++)
+	{
+		if ((grid.field[curr_x + (curr_y * grid.width)] == 0) && (curr_x != prev_x) && (curr_y != prev_y))
+			return 0;
+	}
+	return 1;
+}
+
 // Raboti
 // dobavi cqlostnite proverki na edna kletka !!!!!!!!!!!!!!!!
 int check(struct maze_t grid, int x, int y, int prev_x, int prev_y)
@@ -25,7 +42,7 @@ int check(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 	}
 	if (y + 1 < grid.height)
 	{
-		if ((grid.field[x + ((y + 1) * grid.width)] == 0) && (x != prev_x) && ((y + 1) != prev_y))
+		if ((grid.field[x + ((y + 1) * grid.width)] == 0) && (x != prev_x) && ((y + 1) != prev_y) && (((grid.width * grid.width) - 1) != ((y - 1) * x)))
 			return 0;
 	}
 	if (x + 1 < grid.width)
@@ -139,6 +156,32 @@ void print_grid(struct maze_t grid)
 	for (int i = 0; i < sbor; i++)
 	{
 		if (grid.field[i] == 1)
+			printf("#|");
+		else
+			printf(" |");
+		index++;
+		if (index == grid.width)
+		{
+			printf("|\n\t|");
+			index = 0;
+		}
+	}
+	for (int i = grid.width; i > 0; i--)
+		printf("-");
+	printf("|");
+}
+
+void print_grid2(struct maze_t grid)
+{
+	printf("\t|");
+	for (int i = grid.width; i > 0; i--)
+		printf("-");
+	printf("|\n\t|");
+	int index = 0;
+	int sbor = grid.width * grid.height;
+	for (int i = 0; i < sbor; i++)
+	{
+		if (grid.field[i] == 1)
 			printf("#");
 		else
 			printf(" ");
@@ -163,7 +206,7 @@ struct maze_t generate(int height, int width)
 	for (int i = 0; i < (width * height); i++)
 		grid.field[i] = 1;
 	print_grid(grid);
-	grid.field[(height * width) - 1] = 0;
+	//grid.field[(height * width) - 1] = 0;
 	//napravi vinagi poslednata kletka da e prazna, za da moje da se nameri put do neq!!!!!!!!!!!!!!
 	int* res = generate_maze1(grid, 0, 0, 0, 0);
 	grid.field = res;
@@ -176,7 +219,7 @@ struct maze_t generate(int height, int width)
 // Raboti
 int main()
 {
-	int width = 4, height = 4, seed = 3;
+	int width = 10, height = 10, seed = 11;
 
 	srand(seed); //(unsigned int)time((time_t*)NULL)
 
@@ -186,6 +229,19 @@ int main()
 	puts("");
 	puts("");
 	print_grid(res);
+
+	puts("");
+	puts("");
+	print_grid2(res);
+
+	/*struct maze_t grid;
+	grid.field = malloc(sizeof(int) * width * height);
+	grid.height = height, grid.width = width;
+	for (int i = 0; i < (width * height); i++)
+		grid.field[i] = 1;
+	grid.field[0] = 0, grid.field[1] = 0, grid.field[2] = 0;
+	grid.field[5] = 0;
+	printf("%d", check(grid, 2, 1, 2, 0));*/
 
 	return 0;
 }
