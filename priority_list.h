@@ -9,7 +9,6 @@ struct board
     int len;
     int row_len;
     int col_len;
-    int empty_pos;
 };
 
 

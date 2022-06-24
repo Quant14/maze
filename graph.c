@@ -1,6 +1,43 @@
 #include "graph.h"
 #include "set.h"
 
+struct node_t* create_astar_node(struct node_t*node)
+{
+    struct astar_node_t* curr_node_temp = malloc(sizeof(struct astar_node_t));
+    curr_node_temp->value = node->value;
+    struct board* tmp = malloc(sizeof(struct board));
+    int* tmp_b = malloc(sizeof(int) * node->board->len);
+    tmp->board = tmp_b;
+    for (int i = 0; i < node->board->len; i++)
+        tmp->board[i] = node->board->board[i];
+    tmp->len = node->board->len;
+    tmp->row_len = node->board->row_len;
+    tmp->col_len = node->board->col_len;
+    curr_node_temp->board = tmp;
+    curr_node_temp->visited = 0;
+    curr_node_temp->heuristic = -1;
+    curr_node_temp->weight = -1;
+    curr_node_temp->prev_move = NULL;
+    curr_node_temp->prev = NULL;
+    return curr_node_temp;
+}
+
+struct node_t* create_node(struct board *board,int value)
+{
+    struct node_t* curr_node_temp = malloc(sizeof(struct node_t));
+    curr_node_temp->value = value;
+    struct board* tmp = malloc(sizeof(struct board));
+    int* tmp_b = malloc(sizeof(int) * board->row_len * board->col_len);
+    tmp->board = tmp_b;
+    for (int i = 0; i < board->row_len * board->col_len; i++)
+        tmp->board[i] = board->board[i];
+    tmp->len = board->row_len * board->col_len;
+    tmp->row_len = board->row_len;
+    tmp->col_len = board->col_len;
+    curr_node_temp->board = tmp;
+    return curr_node_temp;
+}
+
 struct node_t* find_node_in_set(struct set_t* set, void* value)
 {
     for (struct list_node_t* curr = set->head; curr != NULL; curr = curr->next)
@@ -103,7 +140,6 @@ struct connection_t* connect_nodes(struct graph_t* g, int a, int b, struct board
         tmp->len = b_a.len;
         tmp->row_len = b_a.row_len;
         tmp->col_len = b_a.col_len;
-        tmp->empty_pos = b_a.empty_pos;
         a_node->board = tmp;
         add_to_set(g->nodes, a_node);
     }
@@ -124,7 +160,6 @@ struct connection_t* connect_nodes(struct graph_t* g, int a, int b, struct board
         tmp->len = b_b.len;
         tmp->row_len = b_b.row_len;
         tmp->col_len = b_b.col_len;
-        tmp->empty_pos = b_b.empty_pos;
         b_node->board = tmp;
         add_to_set(g->nodes, b_node);
     }
