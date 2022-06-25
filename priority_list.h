@@ -3,12 +3,11 @@
 #include <malloc.h>
 
 
-struct board
+struct maze_t
 {
-    int* board;
-    int len;
-    int row_len;
-    int col_len;
+    int* field;
+    int width;
+    int height;
 };
 
 
@@ -21,7 +20,7 @@ struct move
 struct astar_node_t
 {
     int value;
-    struct board* board;
+    struct maze_t* board;
     int visited;
     float weight;
     float heuristic;

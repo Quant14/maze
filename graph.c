@@ -4,15 +4,17 @@
 struct node_t* create_astar_node(struct node_t*node)
 {
     struct astar_node_t* curr_node_temp = malloc(sizeof(struct astar_node_t));
+    if (curr_node_temp == NULL)return 0;
     curr_node_temp->value = node->value;
-    struct board* tmp = malloc(sizeof(struct board));
-    int* tmp_b = malloc(sizeof(int) * node->board->len);
-    tmp->board = tmp_b;
-    for (int i = 0; i < node->board->len; i++)
-        tmp->board[i] = node->board->board[i];
-    tmp->len = node->board->len;
-    tmp->row_len = node->board->row_len;
-    tmp->col_len = node->board->col_len;
+    struct maze_t* tmp = malloc(sizeof(struct maze_t));
+    if (tmp == NULL)return 0;
+    int* tmp_b = malloc(sizeof(int) * node->board->width* node->board->height);
+    if (tmp_b == NULL)return 0;
+    tmp->field = tmp_b;
+    for (int i = 0; i < node->board->width * node->board->height; i++)
+        tmp->field[i] = node->board->field[i];
+    tmp->width = node->board->width;
+    tmp->height = node->board->height;
     curr_node_temp->board = tmp;
     curr_node_temp->visited = 0;
     curr_node_temp->heuristic = -1;
@@ -22,18 +24,20 @@ struct node_t* create_astar_node(struct node_t*node)
     return curr_node_temp;
 }
 
-struct node_t* create_node(struct board *board,int value)
+struct node_t* create_node(struct maze_t *board,int value)
 {
     struct node_t* curr_node_temp = malloc(sizeof(struct node_t));
+    if (curr_node_temp == NULL)return 0;
     curr_node_temp->value = value;
-    struct board* tmp = malloc(sizeof(struct board));
-    int* tmp_b = malloc(sizeof(int) * board->row_len * board->col_len);
-    tmp->board = tmp_b;
-    for (int i = 0; i < board->row_len * board->col_len; i++)
-        tmp->board[i] = board->board[i];
-    tmp->len = board->row_len * board->col_len;
-    tmp->row_len = board->row_len;
-    tmp->col_len = board->col_len;
+    struct maze_t* tmp = malloc(sizeof(struct maze_t));
+    if (tmp == NULL)return 0;
+    int* tmp_b = malloc(sizeof(int) * board->width * board->height);
+    if (tmp_b== NULL)return 0;
+    tmp->field = tmp_b;
+    for (int i = 0; i < board->width * board->height; i++)
+        tmp->field[i] = board->field[i];
+    tmp->width = board->width;
+    tmp->height = board->height;
     curr_node_temp->board = tmp;
     return curr_node_temp;
 }
@@ -47,16 +51,16 @@ struct node_t* find_node_in_set(struct set_t* set, void* value)
     return 0;
 }
 
-struct node_t* find_node_in_set_board(struct set_t* set, struct board* board)
+struct node_t* find_node_in_set_board(struct set_t* set, struct maze_t* board)
 {
     for (struct list_node_t* curr = set->head; curr != NULL; curr = curr->next)
     {
         int cnt = 0;
-        for (int i = 0; i < board->len; i++)
+        for (int i = 0; i < board->width * board->height; i++)
         {
-            if (((struct node_t*)curr->value)->board->board[i] == board->board[i])cnt++;
+            if (((struct node_t*)curr->value)->board->field[i] == board->field[i]||( ((struct node_t*)curr->value)->board->field[i] >1&& board->field[i]>1))cnt++;
         }
-        if (cnt == board->len)
+        if (cnt == board->width * board->height)
             return curr->value;
         //if (((struct node_t*)curr->value)->board == board) 
          //   return curr->value;
@@ -64,48 +68,17 @@ struct node_t* find_node_in_set_board(struct set_t* set, struct board* board)
     return 0;
 }
 
-struct astar_node_t* astar_find_node_in_set_board(struct set_t* set, struct board* board)
+struct astar_node_t* astar_find_node_in_set_board(struct set_t* set, struct maze_t* board)
 {
     for (struct list_node_t* curr = set->head; curr != NULL; curr = curr->next)
     {
-
-      /*  char print_vals[6] = {' ','#','>','V','<','^'};
-        for (int i = 0; i < board->col_len; i++)
-        {
-            for (int j = 0; j < board->row_len; j++)
-            {
-                int coordinate = j + i * board->row_len;
-                int tmp = board->board[coordinate];
-                //printf("%d ", coordinate);
-                printf("%c", print_vals[tmp]);
-            }
-            printf("\n");
-        }
-        printf("\n\n\n");
-
-        for (int i = 0; i < board->col_len; i++)
-        {
-            for (int j = 0; j < board->row_len; j++)
-            {
-                int coordinate = j + i * board->row_len;
-                int tmp = ((struct astar_node_t*)curr->value)->board->board[coordinate];
-                //printf("%d ", coordinate);
-                printf("%c", print_vals[tmp]);
-            }
-            printf("\n");
-        }
-        printf("\n\n\n");
-        */
-
         int cnt = 0;
-        for (int i = 0; i < board->len; i++)
+        for (int i = 0; i < board->width * board->height; i++)
         {
-            if (((struct astar_node_t*)curr->value)->board->board[i] == board->board[i])cnt++;
+            if (((struct astar_node_t*)curr->value)->board->field[i] == board->field[i] || (((struct astar_node_t*)curr->value)->board->field[i] > 1 && board->field[i] > 1))cnt++;
         }
-        if (cnt == board->len)
+        if (cnt == board->width * board->height)
             return curr->value;
-        //if (((struct node_t*)curr->value)->board == board) 
-         //   return curr->value;
     }
     return 0;
 }
@@ -121,46 +94,18 @@ struct connection_t* find_connection_in_set(struct set_t* set, void* value)
 }
 
 
-struct connection_t* connect_nodes(struct graph_t* g, int a, int b, struct board b_a, struct board b_b, struct move m) {
+struct connection_t* connect_nodes(struct graph_t* g, int a, int b, struct maze_t b_a, struct maze_t b_b, struct move m) {
     struct node_t* a_node = find_node_in_set_board(g->nodes, &b_a);
     struct node_t* b_node = find_node_in_set_board(g->nodes, &b_b);
     if (a_node == 0)
     {
-        /* a_node = malloc(sizeof(struct node_t));
-         a_node->value = a;
-         a_node->board = &b_a;
-         add_to_set(g->nodes, a_node);*/
-        a_node = malloc(sizeof(struct node_t));
-        a_node->value = a;
-        struct board* tmp = malloc(sizeof(struct board));
-        int* tmp_b = malloc(sizeof(int) * b_a.len);
-        tmp->board = tmp_b;
-        for (int i = 0; i < b_a.len; i++)
-            tmp->board[i] = b_a.board[i];
-        tmp->len = b_a.len;
-        tmp->row_len = b_a.row_len;
-        tmp->col_len = b_a.col_len;
-        a_node->board = tmp;
+        a_node = create_node(&b_a, a);
         add_to_set(g->nodes, a_node);
     }
 
     if (b_node == 0)
     {
-        /*b_node = malloc(sizeof(struct node_t));
-        b_node->value = b;
-        b_node->board = &b_b;
-        add_to_set(g->nodes, b_node);*/
-        b_node = malloc(sizeof(struct node_t));
-        b_node->value = b;
-        struct board* tmp = malloc(sizeof(struct board));
-        int* tmp_b = malloc(sizeof(int) * b_b.len);
-        tmp->board = tmp_b;
-        for (int i = 0; i < b_b.len; i++)
-            tmp->board[i] = b_b.board[i];
-        tmp->len = b_b.len;
-        tmp->row_len = b_b.row_len;
-        tmp->col_len = b_b.col_len;
-        b_node->board = tmp;
+        b_node = create_node(&b_b,b);
         add_to_set(g->nodes, b_node);
     }
     struct connection_t* c = malloc(sizeof(struct connection_t));
@@ -176,10 +121,10 @@ struct connection_t* connect_nodes(struct graph_t* g, int a, int b, struct board
 void print_graph(struct graph_t* graph) {
     for (struct list_node_t* curr = graph->nodes->head; curr != NULL; curr = curr->next) {
         printf("%d\n", ((struct node_t*)curr->value)->value);
-        for (int j = 0; j < ((struct node_t*)curr->value)->board->col_len; j++)
+        for (int j = 0; j < ((struct node_t*)curr->value)->board->height; j++)
         {
-            for (int i = 0; i < ((struct node_t*)curr->value)->board->row_len; i++)
-                printf("%d ", ((struct node_t*)curr->value)->board->board[j * ((struct node_t*)curr->value)->board->row_len + i]);
+            for (int i = 0; i < ((struct node_t*)curr->value)->board->width; i++)
+                printf("%d ", ((struct node_t*)curr->value)->board->field[j * ((struct node_t*)curr->value)->board->width + i]);
             printf("\n");
         }
     }
