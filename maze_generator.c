@@ -17,9 +17,10 @@ void print_grid(struct maze_t grid)
 	for (int i = grid.width * 2; i > 0; i--)
 		printf("-");
 	printf("|\n\t|");
+
 	int index = 0;
-	int sbor = grid.width * grid.height;
-	for (int i = 0; i < sbor; i++)
+	int multiplicated = grid.width * grid.height;
+	for (int i = 0; i < multiplicated; i++)
 	{
 		if (grid.field[i] == 1)
 			printf("#|");
@@ -32,6 +33,7 @@ void print_grid(struct maze_t grid)
 			index = 0;
 		}
 	}
+
 	for (int i = grid.width * 2; i > 0; i--)
 		printf("-");
 	printf("|");
@@ -43,9 +45,10 @@ void print_grid2(struct maze_t grid)
 	for (int i = grid.width; i > 0; i--)
 		printf("-");
 	printf("|\n\t|");
+
 	int index = 0;
-	int sbor = grid.width * grid.height;
-	for (int i = 0; i < sbor; i++)
+	int multiplicated = grid.width * grid.height;
+	for (int i = 0; i < multiplicated; i++)
 	{
 		if (grid.field[i] == 1)
 			printf("#");
@@ -58,6 +61,7 @@ void print_grid2(struct maze_t grid)
 			index = 0;
 		}
 	}
+
 	for (int i = grid.width; i > 0; i--)
 		printf("-");
 	printf("|");
@@ -71,6 +75,7 @@ int check(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 		return 0;
 	if (prev_x == x && prev_y == y)
 		return 0;
+
 	if (y - 1 >= 0)
 	{
 		if ((grid.field[x + ((y - 1) * grid.width)] == 0) && (x != prev_x) && ((y - 1) != prev_y))
@@ -101,7 +106,7 @@ int* find_neighbours(struct maze_t grid, int x, int y)
 	if (!res) return 0;
 	int index = 1, cnt = 0;
 
-	//обикалям всичко около точката и ако има отворена клетка значи не може тази точка да е от лабиринта
+	//обикалям всичко около текущата клетка и ако има отворена клетка значи не може тази точка да е от лабиринта
 	//освен само предишната клетка, която е от пътя
 
 	if (x - 1 >= 0)
@@ -124,6 +129,7 @@ int* find_neighbours(struct maze_t grid, int x, int y)
 		if (check(grid, x, y + 1, x, y) == 1)
 			res[index++] = 3, cnt++; // dolu - 3
 	}
+
 	res[0] = cnt;
 	if (index < 5)
 		for (; index < 5; index++)
@@ -135,35 +141,45 @@ int* find_neighbours(struct maze_t grid, int x, int y)
 int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 {
 	grid.field[x + (y * grid.width)] = 0;
+
+	// For tests
 	//puts("");
 	//puts("");
 	//print_grid(grid);
+
 	if ((x + y + 2) == (grid.height + grid.width))
 		return grid.field;
-	int* n_directions = find_neighbours(grid, x, y); // neighbours directions
-	int neighbours = n_directions[0];
-	if (neighbours == 0)
+
+	int* neigh_directions = find_neighbours(grid, x, y); // neighbours directions
+
+	int neighbours_cnt = neigh_directions[0];
+	if (neighbours_cnt == 0)
 		return grid.field;
-	for (int i = 0; i < neighbours; i++)
+
+	for (int i = 0; i < neighbours_cnt; i++)
 	{
-		// ignore n_directions[0] - this is the count of the neighbours
-		int res = rand() % neighbours;
+		// ignore neigh_directions[0] - this is the count of the neighbours
+		int res = rand() % neighbours_cnt;
 		res++;
-		if (n_directions[res] != -1)
+
+		if (neigh_directions[res] != -1)
 		{
 			int curr_x = x, curr_y = y;
-			if (n_directions[res] == 0)
+			if (neigh_directions[res] == 0)
 				curr_x--;
-			else if (n_directions[res] == 2)
+			else if (neigh_directions[res] == 2)
 				curr_x++;
-			else if (n_directions[res] == 1)
+			else if (neigh_directions[res] == 1)
 				curr_y--;
-			else if (n_directions[res] == 3)
+			else if (neigh_directions[res] == 3)
 				curr_y++;
+
 			grid.field = generate_maze1(grid, curr_x, curr_y, x, y);
-			//return grid;
-			n_directions[res] = -1;
-			n_directions = find_neighbours(grid, x, y);
+
+			neigh_directions[res] = -1;
+			neigh_directions = find_neighbours(grid, x, y);
+
+			//neighbours_cnt = neigh_directions[0];
 			//if (grid.field[(grid.width * grid.height) - 1] == 0)
 				//return grid.field;
 		}
@@ -177,23 +193,26 @@ struct maze_t generate(int height, int width)
 	struct maze_t grid;
 	grid.field = malloc(sizeof(int) * width * height);
 	grid.height = height, grid.width = width;
+
 	for (int i = 0; i < (width * height); i++)
 		grid.field[i] = 1;
+
 	print_grid2(grid); // optional
 	int* res = generate_maze1(grid, 0, 0, 0, 0);
-	grid.field = res;
-	//if (grid.field[(width * height) - 1] == 1)
-		//grid.field[(width * height) - 1] = 0;
+
+	if (grid.field[(width * height) - 1] == 1)
+		grid.field[(width * height) - 1] = 0;
+
 	return grid;
 }
 
 //реда + колоната*ширината = мястото в едномерния масив
-//3*1+2 = 5
+//2 + 1*3 = 5
 
 // Raboti
 int main()
 {
-	int width = 40, height = 30, seed = 15;
+	int width = 15, height = 15, seed = 3;
 
 	if (seed == -1) // we do not have seed so do not need it
 		srand((unsigned int)time((time_t*)NULL));
