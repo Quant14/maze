@@ -1,7 +1,7 @@
 #include "graph.h"
 #include "set.h"
 
-struct node_t* create_astar_node(struct node_t*node)
+struct astar_node_t* create_astar_node(struct node_t*node)
 {
     struct astar_node_t* curr_node_temp = malloc(sizeof(struct astar_node_t));
     if (curr_node_temp == NULL)return 0;
