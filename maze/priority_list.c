@@ -71,15 +71,6 @@ struct priority_list* remove_list(struct priority_list* list, int value)
 	return list;
 }
 
-void print_priority_list(struct priority_list* list)
-{
-	while (list->list)
-	{
-		printf("%f ", list->list->data.heuristic);
-		list->list = list->list->next;
-	}
-}
-
 struct priority_list* pop(struct priority_list* list, struct astar_node_t* res)
 {
 	if (list->list == NULL)
