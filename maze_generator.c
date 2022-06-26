@@ -80,7 +80,7 @@ int check(struct maze_t* grid, int x, int y, int prev_x, int prev_y)
 	}
 	if (y + 1 < grid->height)
 	{
-		if ((grid->field[x + ((y + 1) * grid->width)] == 0) && (x != prev_x) && ((y + 1) != prev_y)) //  && (((grid.width * grid.width) - 1) != ((y - 1) * x))
+		if ((grid->field[x + ((y + 1) * grid->width)] == 0) && (x != prev_x) && ((y + 1) != prev_y))
 			return 0;
 	}
 	if (x + 1 < grid->width)
@@ -184,13 +184,18 @@ struct maze_t* generate_maze(struct maze_t* grid, int x, int y, int prev_x, int 
 }
 
 // Function to call recursive generating the maze
+
 struct maze_t* generate()
 {
 	int height, width, seed, from_scanf = 0;
 
 	do {
+		printf("Enter valid height, width and seed.\n");
 		from_scanf = scanf("%d %d %d", &height, &width, &seed);
 	} while (height < 3 || width < 3);
+
+	system("cls");
+	print_menu(0);
 
 	// We do not have seed so we do not need it
 	if (seed == -1)
@@ -208,9 +213,7 @@ struct maze_t* generate()
 	{
 		for (int i = 0; i < (width * height); i++)
 			grid->field[i] = 1;
-		
-		//print_grid2(grid); // optional
-		
+
 		// Generate the maze
 		grid = generate_maze(grid, 0, 0, 0, 0);
 		grid->field[0] = 2;
@@ -219,7 +222,7 @@ struct maze_t* generate()
 			grid->field[(width * height) - 1] = 0;
 
 		// Check if we can solve the maze
-		if (find_shortest_path_a_star(grid) != 0)
+		if (find_shortest_path_a_star(grid, 0, 0, 0, 0) != 0)
 			break;
 		else
 			if (seed != -1)
