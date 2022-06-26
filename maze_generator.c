@@ -143,9 +143,9 @@ int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 	grid.field[x + (y * grid.width)] = 0;
 
 	// For tests
-	//puts("");
-	//puts("");
-	//print_grid(grid);
+	puts("");
+	puts("");
+	print_grid(grid);
 
 	if ((x + y + 2) == (grid.height + grid.width))
 		return grid.field;
@@ -155,28 +155,33 @@ int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 	int neighbours_cnt = neigh_directions[0];
 	if (neighbours_cnt == 0)
 		return grid.field;
+	
+	int rnd = 0;
 
 	for (int i = 0; i < neighbours_cnt; i++)
 	{
 		// ignore neigh_directions[0] - this is the count of the neighbours
-		int res = rand() % neighbours_cnt;
-		res++;
+		if (neigh_directions[2] == -1 && neigh_directions[0] == 1)
+			rnd = 0;
+		else
+			rnd = rand() % neighbours_cnt;
+		rnd++;
 
-		if (neigh_directions[res] != -1)
+		if (neigh_directions[rnd] != -1)
 		{
 			int curr_x = x, curr_y = y;
-			if (neigh_directions[res] == 0)
+			if (neigh_directions[rnd] == 0)
 				curr_x--;
-			else if (neigh_directions[res] == 2)
+			else if (neigh_directions[rnd] == 2)
 				curr_x++;
-			else if (neigh_directions[res] == 1)
+			else if (neigh_directions[rnd] == 1)
 				curr_y--;
-			else if (neigh_directions[res] == 3)
+			else if (neigh_directions[rnd] == 3)
 				curr_y++;
 
 			grid.field = generate_maze1(grid, curr_x, curr_y, x, y);
 
-			neigh_directions[res] = -1;
+			neigh_directions[rnd] = -1;
 			neigh_directions = find_neighbours(grid, x, y);
 
 			//neighbours_cnt = neigh_directions[0];
@@ -212,7 +217,7 @@ struct maze_t generate(int height, int width)
 // Raboti
 int main()
 {
-	int width = 15, height = 15, seed = 3;
+	int width = 5, height = 5, seed = 3;
 
 	if (seed == -1) // we do not have seed so do not need it
 		srand((unsigned int)time((time_t*)NULL));
