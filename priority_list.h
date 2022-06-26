@@ -1,15 +1,5 @@
 #pragma once
-#include <stdio.h>
-#include <malloc.h>
-
-
-struct maze_t
-{
-    int* field;
-    int width;
-    int height;
-};
-
+#include "main.h"
 
 struct move
 {
@@ -46,4 +36,4 @@ struct priority_list* priority_add(struct priority_list* list, float item, int v
 
 struct priority_list* remove_list(struct priority_list* list, int value);
 
-struct priority_list* pop(struct priority_list* list, struct astar_node_t* res);
+struct priority_list* pop(struct priority_list* list, int* res);
