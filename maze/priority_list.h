@@ -36,7 +36,4 @@ struct priority_list* priority_add(struct priority_list* list, float item, int v
 
 struct priority_list* remove_list(struct priority_list* list, int value);
 
-
-void print_priority_list(struct priority_list* list);
-
 struct priority_list* pop(struct priority_list* list, int* res);
