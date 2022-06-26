@@ -27,4 +27,4 @@ int* find_neighbours(struct maze_t grid, int x, int y);
 int* generate_maze(struct maze_t grid, int x, int y, int prev_x, int prev_y);
 
 // General function to generate the maze
-struct maze_t generate(int height, int width, int seed);
+struct maze_t* generate();
