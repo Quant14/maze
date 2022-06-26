@@ -4,12 +4,11 @@
 #include <string.h>
 #include <time.h>
 
-struct maze_t
-{
-	int* field;
-	int width;
-	int height;
-};
+#include "graph.h"
+#include "list.h"
+#include "priority_list.h"
+#include "set.h"
+#include "solve.h"
 
 // Print grid with lines
 void print_grid(struct maze_t* grid);
