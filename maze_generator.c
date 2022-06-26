@@ -5,6 +5,11 @@
 #include <time.h>
 
 #include "maze_generator.h"
+#include "graph.h"
+#include "list.h"
+#include "priority_list.h"
+#include "set.h"
+#include "solve.h"
 
 // Raboti
 void print_grid(struct maze_t* grid)
@@ -208,7 +213,22 @@ struct maze_t* generate()
 		grid->field[i] = 1;
 
 	print_grid2(grid); // optional
-	struct maze_t* res = generate_maze(grid, 0, 0, 0, 0);
+
+	do
+	{
+		grid = generate_maze(grid, 0, 0, 0, 0);
+		grid->field[0] = 2;
+		if (find_shortest_path_a_star(grid) != 0)
+			break;
+		else
+		{
+			if (seed != -1)
+				seed++;
+		}
+	} while (1);
+
+	if (find_shortest_path_a_star(grid) == 0)
+		;
 
 	if (grid->field[(width * height) - 1] == 1)
 		grid->field[(width * height) - 1] = 0;
