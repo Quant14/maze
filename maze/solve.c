@@ -18,7 +18,6 @@ int validate_move(int new_pos, int prev_pos, struct maze_t* maze)
 void solve_maze(struct maze_t* maze, SDL_Renderer* rend, int theme, SDL_Rect* character)
 {
     int player_pos = 0;
-    int frenski_pos = 0;
 
     int wall_check[4] = { maze->width,-1,-maze->width,1 };
     int movements[4] = { 1,maze->width,-1,-maze->width };
@@ -29,11 +28,11 @@ void solve_maze(struct maze_t* maze, SDL_Renderer* rend, int theme, SDL_Rect* ch
         SDL_RenderPresent(rend);
         SDL_Delay(300);
         int direction = maze->field[player_pos];
-        maze->field[player_pos] = 6;
+        maze->field[player_pos] = 6;//character leaves a trail
 
         if (validate_move(player_pos + wall_check[direction - r], player_pos, maze) == 0)
         {
-            while (validate_move(player_pos + movements[direction - r], player_pos, maze) == 0)
+            while (validate_move(player_pos + movements[direction - r], player_pos, maze) == 0)//trying directions until it is valid
             {
                 if (direction > r)
                     direction--;
@@ -64,7 +63,7 @@ int get_player_pos(struct maze_t* maze)
 }
 
 int eval_pos(struct maze_t* maze)
-{
+{//gets Manhattan distance to the end
     int empty_xy = maze->height * maze->width - 1;
     int i = get_player_pos(maze);
     int x = abs(i % maze->width - (maze->width - 1));
@@ -74,7 +73,7 @@ int eval_pos(struct maze_t* maze)
 }
 
 struct astar_node_t* astar_find_in_set(struct set_t* set, void* value)
-{
+{//finds an astar node in the set with the given value
     for (struct list_node_t* curr = set->head; curr != NULL; curr = curr->next)
     {
         if (((struct astar_node_t*)curr->value)->value == (int)value) return curr->value;
