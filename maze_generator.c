@@ -227,9 +227,6 @@ struct maze_t* generate()
 		}
 	} while (1);
 
-	if (find_shortest_path_a_star(grid) == 0)
-		;
-
 	if (grid->field[(width * height) - 1] == 1)
 		grid->field[(width * height) - 1] = 0;
 
