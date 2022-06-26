@@ -11,6 +11,9 @@ void save_to_file(struct maze_t* maze) {
 		scanf("%s", filename);
 	}
 
+	system("cls");
+	print_menu(2);
+
 	write_file(filename, maze);
 }
 
@@ -30,7 +33,7 @@ void write_file(char* name, struct maze_t* maze) {
 
 	for (int h = 0, i = 0; h < maze->height; h++) {
 		for (int w = 0; w < maze->width; w++, i++) {
-			fprintf(file, "%d ", maze->field[w * h + w]);
+			fprintf(file, "%d", maze->field[h * maze->width + w]);
 		}
 	}
 

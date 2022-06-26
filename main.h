@@ -12,7 +12,7 @@
 
 //#include<SDL_ttf.h>
 
-#define WIND_W 1280
+#define WIND_W 720
 #define WIND_H 720
 
 struct maze_t {
@@ -22,5 +22,6 @@ struct maze_t {
 };
 
 void print_menu(unsigned int selected);
+struct maze_t* copy_maze(struct maze_t* maze);
 
 #endif

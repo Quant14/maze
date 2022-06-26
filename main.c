@@ -2,45 +2,33 @@
 #include "save.h"
 #include "read.h"
 #include "graphics.h"
+#include "maze_generator.h"
+#include "frenski.h"
+#include "solve.h"
 
-void update(unsigned int selected, SDL_Renderer* rend) {
-	print_menu(selected);
-}
+struct maze_t* copy_maze(struct maze_t* maze) {
+	struct maze_t* res = malloc(sizeof * res);
+	res->field = malloc(sizeof(int) * maze->height * maze->width);
 
-/*char* generate_string(unsigned int selected) {
-	char* options[6] = { "Generate maze\n", "Read from file\n", "Save to file\n", "Solve manually\n", "Solve automatically\n", "Quit\n" };
-	static char res_str[95];
+	res->height = maze->height;
+	res->width = maze->width;
 
-	for (int i = 0; i < 6; i++) {
-		if (i == selected)
-			strcat(res_str, "> ");
-		strcat(res_str, options[i]);
+	for (int i = 0; i < maze->height * maze->width; i++)
+	{
+		res->field[i] = maze->field[i];
 	}
 
-	return res_str;
-}*/
+	return res;
+}
 
 void print_menu(unsigned int selected) {
-	char* options[6] = { "Generate maze", "Read from file", "Save to file", "Solve manually", "Solve automatically", "Quit" };
+	char* options[8] = { "Generate maze", "Read from file", "Save to file", "Solve manually", "Solve with A*", "Solve with wall hugging", "Cycle themes", "Quit"};
 	system("cls");
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 8; i++) {
 		if (i == selected)
 			printf("> ");
 		printf("%s\n", options[i]);
 	}
-	/* SDL_TTF - not working
-	char* str = generate_string(selected);
-
-	SDL_Surface* surface = TTF_RenderText_Solid(font, str, color);
-	SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surface);
-	int texW = 0, texH = 0;
-	SDL_QueryTexture(tex, NULL, NULL, &texW, &texH);
-	SDL_Rect dstrect = { 50, 50, texW, texH };
-
-	SDL_RenderCopy(rend, tex, NULL, &dstrect);
-
-	SDL_DestroyTexture(tex);
-	SDL_FreeSurface(surface);*/
 }
 
 int main(int argc, char* argv[]) {
@@ -49,8 +37,6 @@ int main(int argc, char* argv[]) {
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 		return -1;
 	}
-
-	//TTF_Init();
 
 	SDL_Window* wind = SDL_CreateWindow("Maze explorer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIND_W, WIND_H, 0);
 	if (!wind) {
@@ -68,15 +54,21 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-	//TTF_Font* font = TTF_OpenFont("opensans.ttf", 25);
-	//SDL_Color color = { 255, 255, 255 };
 	print_menu(0);
 
 	SDL_Event event;
 
 	unsigned int selected = 0;
 	bool running = true;
+	int theme = 0;
+	bool solved = 0;
+	bool playing = 0;
 	struct maze_t* maze = malloc(sizeof *maze);
+	maze = 0;
+
+	int frenski_pos = 0;
+	int old_pos = 0;
+	SDL_Rect frenski = { 0, 0, PIXELSIZE, PIXELSIZE };
 
 	while (running) {
 		while (SDL_PollEvent(&event)) {
@@ -87,68 +79,122 @@ int main(int argc, char* argv[]) {
 				case SDL_KEYUP:
 					switch (event.key.keysym.sym) {
 						case SDLK_DOWN:
-							if (selected < 5) {
+							if (selected < 7) {
 								selected++;
-								update(selected, rend);
+								print_menu(selected);
 							}
 							break;
 						case SDLK_UP:
 							if (selected > 0) {
 								selected--;
-								update(selected, rend);
+								print_menu(selected);
 							}
 							break;
 						case SDLK_RETURN:
 							switch (selected) {
 							case 0:
-								//generate maze func
+								maze = generate();
+								frenski.x = frenski.y = 0;
+								frenski.h = frenski.w = PIXELSIZE * (WIND_W / (maze->width * PIXELSIZE));
+								solved = 0;
+								draw_field(maze, rend, theme, solved);
 								break;
 							case 1:
 								maze = read_file();
-								draw_field(maze, rend);
+								frenski.h = frenski.w = PIXELSIZE * (WIND_W / (maze->width * PIXELSIZE));
+								solved = 0;
+								draw_field(maze, rend, theme, solved);
 								break;
 							case 2:
-								draw_field(maze, rend);
+								solved = 0;
+								draw_field(maze, rend, theme, solved);
 								save_to_file(maze);
 								break;
 							case 3:
-								//solve manually func
+								if (maze) {
+									solved = 0;
+									frenski.x = frenski.y = 0;
+									draw_field(maze, rend, theme, solved);
+									draw_character(rend, frenski, theme);
+									playing = 1;
+								}
 								break;
 							case 4:
-								//solve automatically func
+								if (maze) {
+									solved = 1;
+									struct maze_t* copy = copy_maze(maze);
+									draw_field(copy, rend, theme, solved);
+									SDL_RenderPresent(rend);
+									find_shortest_path_a_star(copy, rend, theme, 1, &frenski);
+									draw_field(copy, rend, theme, solved);
+								}
 								break;
-							case 5:
+							case 5: 
+								if (maze) {
+									solved = 1;
+									struct maze_t* copy = copy_maze(maze);
+									solve_maze(copy, rend, theme, &frenski);
+									draw_field(copy, rend, theme, solved);
+								}
+								break;
+							case 6:
+								theme++;
+								if (theme > 2) theme = 0;
+								if (maze) {
+									draw_field(maze, rend, theme, solved);
+									if (playing)
+										draw_character(rend, frenski, theme);
+								}
+								break;
+							case 7:
 								running = false;
 								break;
 							}
 							break;
+						case SDLK_w:
+							if (playing) {
+								old_pos = frenski_pos;
+								frenski_pos = move(maze, frenski_pos, 3);
+								if (frenski_pos != old_pos) frenski.y -= frenski.h;
+								draw_field(maze, rend, theme, 0);
+								draw_character(rend, frenski, theme);
+							}
+							break;
+						case SDLK_s:
+							if (playing) {
+								old_pos = frenski_pos;
+								frenski_pos = move(maze, frenski_pos, 1);
+								if (frenski_pos != old_pos) frenski.y += frenski.h;
+								draw_field(maze, rend, theme, 0);
+								draw_character(rend, frenski, theme);
+							}
+							break;
+						case SDLK_d:
+							if (playing) {
+								old_pos = frenski_pos;
+								frenski_pos = move(maze, frenski_pos, 0);
+								if (frenski_pos != old_pos) frenski.x += frenski.w;
+								draw_field(maze, rend, theme, 0);
+								draw_character(rend, frenski, theme);
+							}
+							break;
+						case SDLK_a:
+							if (playing) {
+								old_pos = frenski_pos;
+								frenski_pos = move(maze, frenski_pos, 2);
+								if (frenski_pos != old_pos) frenski.x -= frenski.w;
+								draw_field(maze, rend, theme, 0);
+								draw_character(rend, frenski, theme);
+							}
+							break;
 					}
 			}
-			
 		}
 		SDL_RenderPresent(rend);
-		SDL_Delay(1000 / 60);
-		/* console menu system
-		do {
-			system("cls");
-			for (int i = 0; i < 6; i++) {
-				if (i == selected)
-					printf("> ");
-				printf("%s\n", options[i]);
-			}
-			scanf("%c", &input);
-			if (input == 'e') //enter
-				break;
-			if (input == 'w' && selected > 0)
-				selected--;
-			else if (input == 's' && selected < 5)
-				selected++;
-		} while (true);*/
+		SDL_Delay(50);
 	}
 	SDL_DestroyRenderer(rend);
 	SDL_DestroyWindow(wind);
-	//TTF_CloseFont(font);
-	//TTF_Quit();
 	SDL_Quit();
 
 	return 0;
