@@ -209,13 +209,12 @@ struct maze_t* generate()
 	if (!grid->field) return 0;
 	grid->height = height, grid->width = width;
 
-	for (int i = 0; i < (width * height); i++)
-		grid->field[i] = 1;
-
-	print_grid2(grid); // optional
-
 	do
 	{
+		for (int i = 0; i < (width * height); i++)
+			grid->field[i] = 1;
+		print_grid2(grid); // optional
+
 		grid = generate_maze(grid, 0, 0, 0, 0);
 		grid->field[0] = 2;
 		if (find_shortest_path_a_star(grid) != 0)
