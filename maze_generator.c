@@ -3,12 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-struct maze_t
-{
-	int* field;
-	int width;
-	int height;
-};
+#include "maze_generator.h"
 
 // Raboti
 void print_grid(struct maze_t grid)
@@ -68,7 +63,6 @@ void print_grid2(struct maze_t grid)
 }
 
 // Raboti
-// dobavi cqlostnite proverki na edna kletka !!!!!!!!!!!!!!!!
 int check(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 {
 	if (grid.field[x + (y * grid.width)] == 0)
@@ -138,14 +132,14 @@ int* find_neighbours(struct maze_t grid, int x, int y)
 }
 
 // Raboti
-int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
+int* generate_maze(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 {
 	grid.field[x + (y * grid.width)] = 0;
 
 	// For tests
+	/*puts("");
 	puts("");
-	puts("");
-	print_grid(grid);
+	print_grid(grid);*/
 
 	if ((x + y + 2) == (grid.height + grid.width))
 		return grid.field;
@@ -179,7 +173,7 @@ int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 			else if (neigh_directions[rnd] == 3)
 				curr_y++;
 
-			grid.field = generate_maze1(grid, curr_x, curr_y, x, y);
+			grid.field = generate_maze(grid, curr_x, curr_y, x, y);
 
 			neigh_directions[rnd] = -1;
 			neigh_directions = find_neighbours(grid, x, y);
@@ -193,8 +187,13 @@ int* generate_maze1(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 }
 
 // Raboti
-struct maze_t generate(int height, int width)
+struct maze_t generate(int height, int width, int seed)
 {
+	if (seed == -1) // we do not have seed so do not need it
+		srand((unsigned int)time((time_t*)NULL));
+	else
+		srand(seed);
+
 	struct maze_t grid;
 	grid.field = malloc(sizeof(int) * width * height);
 	grid.height = height, grid.width = width;
@@ -203,37 +202,10 @@ struct maze_t generate(int height, int width)
 		grid.field[i] = 1;
 
 	print_grid2(grid); // optional
-	int* res = generate_maze1(grid, 0, 0, 0, 0);
+	int* res = generate_maze(grid, 0, 0, 0, 0);
 
 	if (grid.field[(width * height) - 1] == 1)
 		grid.field[(width * height) - 1] = 0;
 
 	return grid;
-}
-
-//реда + колоната*ширината = мястото в едномерния масив
-//2 + 1*3 = 5
-
-// Raboti
-int main()
-{
-	int width = 5, height = 5, seed = 3;
-
-	if (seed == -1) // we do not have seed so do not need it
-		srand((unsigned int)time((time_t*)NULL));
-	else
-		srand(seed);
-
-	struct maze_t res = generate(height, width);
-
-	puts("");
-	puts("");
-	puts("");
-	print_grid(res);
-
-	puts("");
-	puts("");
-	print_grid2(res);
-
-	return 0;
 }
