@@ -27,5 +27,3 @@ struct connection_t* find_connection_in_set(struct set_t* set, void* value);
 
 
 struct connection_t* connect_nodes(struct graph_t* g, int a, int b, struct maze_t b_a, struct maze_t b_b, struct move m);
-
-void print_graph(struct graph_t* graph);
