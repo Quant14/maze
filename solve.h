@@ -20,9 +20,7 @@ int eval_pos(int* board, int height, int width);
 struct astar_node_t* astar_find_in_set(struct set_t* set, void* value);
 
 int board_cmp(int* board1, int* board2, int len);
-
-struct list_node_t* print_path(struct set_t* all_nodes, int value, struct list_node_t* res);
-
-struct list_node_t* find_shortest_path_a_star(
+void print_path(struct set_t* all_nodes, int value);
+int find_shortest_path_a_star(
     struct maze_t* maze
 );

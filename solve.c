@@ -135,22 +135,22 @@ int board_cmp(int* board1, int* board2, int len)
     return 1;
 }
 
-struct list_node_t* print_path(struct set_t* all_nodes, int value, struct list_node_t* res)
+void print_path(struct set_t* all_nodes, int value)
 {
     struct astar_node_t* v = astar_find_in_set(all_nodes, value);
     if (v == NULL)return;
     if (v->prev == NULL)
     {
         print_maze(v->board);
-        return res;
+        return;
     }
-    res = print_path(all_nodes, v->prev->value, res);
+    print_path(all_nodes, v->prev->value);
 
     print_maze(v->board);
-    return res;
+    return;
 }
 
-struct list_node_t* find_shortest_path_a_star(
+int find_shortest_path_a_star(
     struct maze_t *maze
 ) {
     unsigned int values_cnt = 0;
@@ -287,9 +287,10 @@ struct list_node_t* find_shortest_path_a_star(
         node_temp->visited = 1;
         add_to_set(visited_boards,curr_node);
     }
-    struct list_node_t* res_list = 0;
-    res_list = print_path(all_nodes, end, res_list);
-    return res_list;
+    //struct list_node_t* res_list = 0;
+    //res_list = print_path(all_nodes, end, res_list);
+    print_path(all_nodes, end);
+    return 1;
 }
 
 
@@ -309,7 +310,8 @@ int main()
 
     res.field[0] = r;
 
-    find_shortest_path_a_star(&res);
+    if (find_shortest_path_a_star(&res))printf("SOLVABLE");
+    else printf("NOT SOLVABLE");
     //solve_maze(&res);
 	return 0;
 }
