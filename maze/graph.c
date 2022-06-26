@@ -117,19 +117,3 @@ struct connection_t* connect_nodes(struct graph_t* g, int a, int b, struct maze_
         add_to_set(g->connections, c);
     return c;
 }
-
-void print_graph(struct graph_t* graph) {
-    for (struct list_node_t* curr = graph->nodes->head; curr != NULL; curr = curr->next) {
-        printf("%d\n", ((struct node_t*)curr->value)->value);
-        for (int j = 0; j < ((struct node_t*)curr->value)->board->height; j++)
-        {
-            for (int i = 0; i < ((struct node_t*)curr->value)->board->width; i++)
-                printf("%d ", ((struct node_t*)curr->value)->board->field[j * ((struct node_t*)curr->value)->board->width + i]);
-            printf("\n");
-        }
-    }
-    for (struct list_node_t* curr = graph->connections->head; curr != NULL; curr = curr->next) {
-        struct connection_t* c = (struct connection_t*)curr->value;
-        printf("%d <=> %d\n", c->a, c->b);
-    }
-}
