@@ -17,7 +17,6 @@ struct priority_list* priority_add(struct priority_list* list, float item, int v
 	struct priority_list_node* new_item = malloc(sizeof(struct priority_list_node));
 	new_item->data.heuristic = item;
 	new_item->data.value = value;
-	//new_item->data.value = num;
 	new_item->data.visited = 0;
 	if (list->list == NULL)
 	{
@@ -71,6 +70,7 @@ struct priority_list* remove_list(struct priority_list* list, int value)
 	return list;
 }
 
+
 struct priority_list* pop(struct priority_list* list, struct astar_node_t* res)
 {
 	if (list->list == NULL)
@@ -79,21 +79,10 @@ struct priority_list* pop(struct priority_list* list, struct astar_node_t* res)
 		return 0;
 	}
 	struct priority_list_node* next = list->list->next;
-	//res=&list->list->data;
 	res->prev = list->list->data.prev;
 	res->value = list->list->data.value;
-	//res->weight = list->list->data.weight;
 	res->visited = list->list->data.visited;
 	res->heuristic = list->list->data.heuristic;
-	/*struct board* tmp = malloc(sizeof(struct board));
-	int* tmp_b = malloc(sizeof(int) * list->list->data.board->len);
-	tmp->board = tmp_b;
-	for (int i = 0; i < list->list->data.board->len; i++)
-		tmp->board[i] = list->list->data.board->board[i];
-	tmp->len = list->list->data.board->len;
-	tmp->row_len = list->list->data.board->row_len;
-	res->board = tmp;*/
-	//res->board= list->list->data.board;
 	free(list->list);
 	list->list = next;
 	list->count--;
