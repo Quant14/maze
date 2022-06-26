@@ -27,10 +27,3 @@ void remove_from_set(struct set_t* set, void* value) {
     set->head = remove_from_list(set->head, value);
     set->count--;
 }
-
-void print_all_in_set(struct set_t* set) {
-    struct list_node_t* curr = set->head;
-    for (int i = 0; i < set->count; i++, curr = curr->next) {
-        printf("[%.2d] %p\n", i, curr->value);
-    }
-}
