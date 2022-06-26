@@ -17,7 +17,7 @@ struct node_t
     int value;
 };
 
-struct node_t* create_astar_node(struct node_t* node);
+struct astar_node_t* create_astar_node(struct node_t* node);
 struct node_t* create_node(struct maze_t* board, int value);
 struct node_t* find_node_in_set(struct set_t* set, void* value);
 
