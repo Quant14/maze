@@ -1,8 +1,4 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 #include "maze_generator.h"
 #include "graph.h"
@@ -196,7 +192,10 @@ struct maze_t* generate_maze(struct maze_t* grid, int x, int y, int prev_x, int 
 struct maze_t* generate()
 {
 	int height, width, seed, from_scanf = 0;
-	from_scanf = scanf("%d %d %d", &height, &width, &seed);
+	do
+	{
+		from_scanf = scanf("%d %d %d", &height, &width, &seed);
+	} while (height < 3 || width < 3);
 
 	if (seed == -1) // we do not have seed so do not need it
 		srand((unsigned int)time((time_t*)NULL));
