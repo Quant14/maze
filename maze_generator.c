@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -187,25 +188,30 @@ int* generate_maze(struct maze_t grid, int x, int y, int prev_x, int prev_y)
 }
 
 // Raboti
-struct maze_t generate(int height, int width, int seed)
+struct maze_t* generate()
 {
+	int height, width, seed, from_scanf = 0;
+	from_scanf = scanf("%d %d %d", &height, &width, &seed);
+
 	if (seed == -1) // we do not have seed so do not need it
 		srand((unsigned int)time((time_t*)NULL));
 	else
 		srand(seed);
 
-	struct maze_t grid;
-	grid.field = malloc(sizeof(int) * width * height);
-	grid.height = height, grid.width = width;
+	struct maze_t* grid = malloc(sizeof(struct maze_t));
+	if (!grid) return 0;
+	grid->field = malloc(sizeof(int) * width * height);
+	if (!grid->field) return 0;
+	grid->height = height, grid->width = width;
 
 	for (int i = 0; i < (width * height); i++)
-		grid.field[i] = 1;
+		grid->field[i] = 1;
 
-	print_grid2(grid); // optional
-	int* res = generate_maze(grid, 0, 0, 0, 0);
+	print_grid2(*grid); // optional
+	int* res = generate_maze(*grid, 0, 0, 0, 0);
 
-	if (grid.field[(width * height) - 1] == 1)
-		grid.field[(width * height) - 1] = 0;
+	if (grid->field[(width * height) - 1] == 1)
+		grid->field[(width * height) - 1] = 0;
 
 	return grid;
 }
