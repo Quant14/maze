@@ -7,7 +7,7 @@
 #include "set.h"
 #include "solve.h"
 
-// Raboti
+// Print grid with lines
 void print_grid(struct maze_t* grid)
 {
 	printf("\t|");
@@ -36,6 +36,7 @@ void print_grid(struct maze_t* grid)
 	printf("|");
 }
 
+// Print grid
 void print_grid2(struct maze_t* grid)
 {
 	printf("\t|");
@@ -64,7 +65,7 @@ void print_grid2(struct maze_t* grid)
 	printf("|");
 }
 
-// Raboti
+// Make checks if one neighbour can be neighbours in our grid
 int check(struct maze_t* grid, int x, int y, int prev_x, int prev_y)
 {
 	if (grid->field[x + (y * grid->width)] == 0)
@@ -95,7 +96,7 @@ int check(struct maze_t* grid, int x, int y, int prev_x, int prev_y)
 	return 1;
 }
 
-// Raboti
+// Find all the neighbours of a cell
 int* find_neighbours(struct maze_t* grid, int x, int y)
 {
 	int* res = malloc(sizeof(int) * 5);
@@ -108,24 +109,25 @@ int* find_neighbours(struct maze_t* grid, int x, int y)
 	if (x - 1 >= 0)
 	{
 		if (check(grid, x - 1, y, x, y) == 1) // vmesto x i y -> prev_x, prev_y
-			res[index++] = 0, cnt++; // lqvo - 0
+			res[index++] = 0, cnt++; // left - 0
 	}
 	if (x + 1 < grid->width)
 	{
 		if (check(grid, x + 1, y, x, y) == 1)
-			res[index++] = 2, cnt++; // dqsno - 2
+			res[index++] = 2, cnt++; // right - 2
 	}
 	if (y - 1 >= 0)
 	{
 		if (check(grid, x, y - 1, x, y) == 1)
-			res[index++] = 1, cnt++; // gore - 1
+			res[index++] = 1, cnt++; // up - 1
 	}
 	if (y + 1 < grid->height)
 	{
 		if (check(grid, x, y + 1, x, y) == 1)
-			res[index++] = 3, cnt++; // dolu - 3
+			res[index++] = 3, cnt++; // down - 3
 	}
 
+	// Fill the space in array with -1
 	res[0] = cnt;
 	if (index < 5)
 		for (; index < 5; index++)
@@ -133,16 +135,12 @@ int* find_neighbours(struct maze_t* grid, int x, int y)
 	return res;
 }
 
-// Raboti
+// Generate the maze recursively
 struct maze_t* generate_maze(struct maze_t* grid, int x, int y, int prev_x, int prev_y)
 {
 	grid->field[x + (y * grid->width)] = 0;
 
-	// For tests
-	/*puts("");
-	puts("");
-	print_grid(grid);*/
-
+	// Check if we are at the end of the maze
 	if ((x + y + 2) == (grid->height + grid->width))
 		return grid;
 
@@ -156,7 +154,7 @@ struct maze_t* generate_maze(struct maze_t* grid, int x, int y, int prev_x, int 
 
 	for (int i = 0; i < neighbours_cnt; i++)
 	{
-		// ignore neigh_directions[0] - this is the count of the neighbours
+		// Ignore neigh_directions[0] - this is the count of the neighbours
 		if (neigh_directions[2] == -1 && neigh_directions[0] == 1)
 			rnd = 0;
 		else
@@ -177,27 +175,25 @@ struct maze_t* generate_maze(struct maze_t* grid, int x, int y, int prev_x, int 
 
 			grid = generate_maze(grid, curr_x, curr_y, x, y);
 
+			// Find new valid neighbours
 			neigh_directions[rnd] = -1;
 			neigh_directions = find_neighbours(grid, x, y);
-
-			//neighbours_cnt = neigh_directions[0];
-			//if (grid.field[(grid.width * grid.height) - 1] == 0)
-				//return grid.field;
 		}
 	}
 	return grid;
 }
 
-// Raboti
+// Function to call recursive generating the maze
 struct maze_t* generate()
 {
 	int height, width, seed, from_scanf = 0;
-	do
-	{
+
+	do {
 		from_scanf = scanf("%d %d %d", &height, &width, &seed);
 	} while (height < 3 || width < 3);
 
-	if (seed == -1) // we do not have seed so do not need it
+	// We do not have seed so we do not need it
+	if (seed == -1)
 		srand((unsigned int)time((time_t*)NULL));
 	else
 		srand(seed);
@@ -212,21 +208,23 @@ struct maze_t* generate()
 	{
 		for (int i = 0; i < (width * height); i++)
 			grid->field[i] = 1;
-		print_grid2(grid); // optional
-
+		
+		//print_grid2(grid); // optional
+		
+		// Generate the maze
 		grid = generate_maze(grid, 0, 0, 0, 0);
 		grid->field[0] = 2;
+
+		if (grid->field[(width * height) - 1] == 1)
+			grid->field[(width * height) - 1] = 0;
+
+		// Check if we can solve the maze
 		if (find_shortest_path_a_star(grid) != 0)
 			break;
 		else
-		{
 			if (seed != -1)
 				seed++;
-		}
 	} while (1);
-
-	if (grid->field[(width * height) - 1] == 1)
-		grid->field[(width * height) - 1] = 0;
 
 	return grid;
 }
